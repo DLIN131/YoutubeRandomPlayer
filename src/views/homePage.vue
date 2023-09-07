@@ -3,7 +3,7 @@
     <el-container class="layout-container-demo" style="height: 100vh">
       <el-aside v-if="!notDisplaySideMenu" width="200px">
         <el-scrollbar>
-          <button v-if="!notDisplaySideMenu" @click="toggleMenu" 
+          <button v-if="!notDisplaySideMenu" @click="toggleMenu"
                   class=" w-11 h-11  flex items-center justify-center mb-3 bg-black">
                   <el-icon ><Fold /></el-icon>
           </button>
@@ -25,7 +25,7 @@
       <el-container >
         <el-header style="text-align: center; font-size: 16px" class=" shadow-lg shadow-black z-10">
           <div class="w-full h-full p-1  flex justify-center gap-3 items-center relative" >
-            <button v-if="notDisplaySideMenu" @click="toggleMenu" 
+            <button v-if="notDisplaySideMenu" @click="toggleMenu"
               class=" w-11 h-11 rounded-md flex items-center justify-center z-10 bg-black ">
               <el-icon><Expand /></el-icon>
             </button>
@@ -36,14 +36,14 @@
             <template #dropdown >
               <el-dropdown-menu >
                 <el-dropdown-item v-for="(item, index) in listNames" :key="index" :command="item.value" divided>{{item.name}}</el-dropdown-item>
-              </el-dropdown-menu> 
+              </el-dropdown-menu>
             </template>
             </el-dropdown>
-            
+
             <input v-model="listId" type="text"  placeholder="listId"
              class="w-8/12 h-full mr-1">
              <span class="w-36 flex gap-2 items-center">
-                <button @click="fetchData" class=" bg-black">append</button> 
+                <button @click="fetchData" class=" bg-black">append</button>
                 <img v-if="isLoading" class=" w-10 h-10" src="../assets/img/hutoa01-unscreen.gif" alt="">
              </span>
           </div>
@@ -53,55 +53,54 @@
           <el-main class="flex justify-centeritems-center min-w-96 h-[100vh]">
             <router-view></router-view>
           </el-main>
-        </el-scrollbar>  
+        </el-scrollbar>
       </el-container>
     </el-container>
   </template>
-  
-  <script lang="ts" setup>
-    //import    
-    import { ref } from 'vue'
-    import { House, Download, Expand, Fold, List} from '@element-plus/icons-vue'; 
-    import {useYoutubeDataStore} from '../stores'
 
-    //variables
-    const isLoading = ref(false)
-    const useYoutubeData= useYoutubeDataStore()
-    const listId = ref('')
-    const notDisplaySideMenu = ref(true)
-    const listNames = ref(useYoutubeData.listNameData) //array
-    
-    //methods
-    const fetchData = () => {
-        let pattern = /list=([a-zA-Z0-9_-]+)/;
-        let match = listId.value.match(pattern);
-        if(listId.value === ''){
-          alert('not enter a url or listId')
-          return
-        }
-        if (match) {
-            listId.value = match[1];
-        }
-        // console.log(listId.value);
-        isLoading.value = true
-        useYoutubeData.getSnippetData(listId.value)
-        useYoutubeData.getListName(listId.value)
-        useYoutubeData.latestIndex = 0
-        // console.log(useYoutubeData.snippetData);
-        console.log(useYoutubeData.listNameData);
-        
-        isLoading.value = false
-    }
-    const handleCommand = (command) => {
-      listId.value = command
-    }
-    const toggleMenu = () => {
-        notDisplaySideMenu.value = !notDisplaySideMenu.value
-    }
+<script lang="ts" setup>
+// import
+import { ref } from 'vue'
+import { House, Download, Expand, Fold, List } from '@element-plus/icons-vue'
+import { useYoutubeDataStore } from '../stores'
 
-    
-  </script>
-  
+// variables
+const isLoading = ref(false)
+const useYoutubeData = useYoutubeDataStore()
+const listId = ref('')
+const notDisplaySideMenu = ref(true)
+const listNames = ref(useYoutubeData.listNameData) // array
+
+// methods
+const fetchData = () => {
+  const pattern = /list=([a-zA-Z0-9_-]+)/
+  const match = listId.value.match(pattern)
+  if (listId.value === '') {
+    alert('not enter a url or listId')
+    return
+  }
+  if (match) {
+    listId.value = match[1]
+  }
+  // console.log(listId.value);
+  isLoading.value = true
+  useYoutubeData.getSnippetData(listId.value)
+  useYoutubeData.getListName(listId.value)
+  useYoutubeData.latestIndex = 0
+  // console.log(useYoutubeData.snippetData);
+  console.log(useYoutubeData.listNameData)
+
+  isLoading.value = false
+}
+const handleCommand = (command) => {
+  listId.value = command
+}
+const toggleMenu = () => {
+  notDisplaySideMenu.value = !notDisplaySideMenu.value
+}
+
+</script>
+
   <style scoped>
   .el-main{
     background: url('../assets/img/main_bg01.jpg') no-repeat center;
@@ -142,4 +141,3 @@
     color: white;
   }
   </style>
-  

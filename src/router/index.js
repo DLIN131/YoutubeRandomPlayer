@@ -1,24 +1,25 @@
-import { createRouter, createWebHistory } from "vue-router";
-
+import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-    //vite.config.js base
-    history: createWebHistory(import.meta.env.Base_URL),
-    routes:[
-        {   path: '/', 
-            component: () => import('../views/homePage.vue'),
-            redirect: '/player',
-            children:[
-                {   path: '/download', 
-                    component: () => import('../views/downloadPage.vue')
-                }, //download page
-                {
-                    path: '/player', 
-                    component: () => import('../views/videoDisplayPage.vue')
-                }
-            ]
-        }, //home page    
-    ]
+  // vite.config.js base
+  history: createWebHistory(import.meta.env.Base_URL),
+  routes: [
+    {
+      path: '/',
+      component: () => import('../views/homePage.vue'),
+      redirect: '/player',
+      children: [
+        {
+          path: '/download',
+          component: () => import('../views/downloadPage.vue')
+        }, // download page
+        {
+          path: '/player',
+          component: () => import('../views/videoDisplayPage.vue')
+        }
+      ]
+    } // home page
+  ]
 })
 
 // 登入訪問攔截 => 默認是直接放行

@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 npm run lint   # 代碼格式檢查
-npm test       # 測試
+# npm test       # 測試

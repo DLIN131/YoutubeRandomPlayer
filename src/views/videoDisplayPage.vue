@@ -2,12 +2,12 @@
     <div class="flex justify-between ">
         <div  class="flex flex-col w-8/12 items-center">
             <div>
-                <youtubePlayer 
+                <youtubePlayer
                     v-if="isPrepare"
-                    :width="600" 
-                    :height="400" 
+                    :width="600"
+                    :height="400"
                     :vid="videoId"
-                    :title="title" 
+                    :title="title"
                     :id="id"
                     ref="playerRef"
                     @changeState="getPlayerState">
@@ -15,9 +15,9 @@
 
                 <div v-else>waiting fo video...</div>
             </div>
-            <div v-if="isPrepare" id="buttonArea" 
+            <div v-if="isPrepare" id="buttonArea"
                 class=" bg-transparent/[.7]
-                shadow-inner  shadow-gray-600 w-[75%] mt-10 flex flex-col 
+                shadow-inner  shadow-gray-600 w-[75%] mt-10 flex flex-col
                 justify-center items-center rounded-xl p-5">
                 <div class="flex items-center gap-2 flex-wrap">
                     <button @click="changeToPrev" class=""><el-icon><ArrowLeftBold/></el-icon></button>
@@ -42,14 +42,14 @@
         </div>
         <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData"/>
         <!-- 顯示影片清單區域 -->
-        
+
         <el-scrollbar ref="scrollRef"  class="ml-3 flex flex-col" max-height="100vh"   always>
             <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{useYoutubeData.snippetData.length}}]</div>
             <div v-for="(item, index) in snippetData"
                     :key="index"
-                    @click="loadVideo(item,index)" 
+                    @click="loadVideo(item,index)"
                     :ref="listItems(index)"
-                    :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center 
+                    :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center
                      bg-black  w-full cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
                        text-white`, {colorBackground:clickIndex === index}]">
                     <img :src="item.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
@@ -59,265 +59,238 @@
     </div>
 </template>
 
-
 <script setup>
-    // import
-    import {useYoutubeDataStore} from '../stores'
-    import { ref, onBeforeUnmount, onMounted, watch, } from 'vue'
-    import youtubePlayer from '../components/youtubePlayer.vue'
-    import searchCard from '../components/searchCard.vue'
-    import { 
-        ArrowLeftBold, 
-        ArrowRightBold, 
-        VideoPlay, 
-        VideoPause, 
-        Search, 
-        Sort, 
-    } from '@element-plus/icons-vue'
-    
-    // variables
-    const useYoutubeData = useYoutubeDataStore()
-    const snippetData = ref([])
-    
-    const title = ref('')
-    const videoId = ref('')
-    const id= ref(0)
-    const isPrepare = ref(false)
-    const isPlaying = ref(false)
-    const playerRef = ref(null)
-    const scrollRef = ref(null)
-    const clickIndex = ref(-1)
-    let timeOut = null
-    const next = ref({
-        prevItem: Object,
-        prevIndex: Number,
-        nextItem: Object,
-        nextIndex: Number
-    })
-    const listItemsRef = ref([])
-    const isSearching = ref(false)
+// import
+import { useYoutubeDataStore } from '../stores'
+import { ref, onBeforeUnmount, onMounted, watch } from 'vue'
+import youtubePlayer from '../components/youtubePlayer.vue'
+import searchCard from '../components/searchCard.vue'
+import {
+  ArrowLeftBold,
+  ArrowRightBold,
+  VideoPlay,
+  VideoPause,
+  Search,
+  Sort
+} from '@element-plus/icons-vue'
 
-    //methods
-    //載入歌曲
-    const loadVideo = (item,index) => {
-        
-        if(item){
-            id.value = index
-            title.value = item.title
-            isPrepare.value = true
-            videoId.value = item.resourceId.videoId
-            changeIsPlayingItemBg(index)
-            modifyListItemPos(index)
-            // console.log(videoId.value);
-            next.value.prevIndex = index-1
-            next.value.prevItem = snippetData.value[index-1]
-            next.value.nextIndex = index+1
-            next.value.nextItem = snippetData.value[index+1]
-        }        
-        
-    }
-    //改變正在播放歌曲的背景
-    const changeIsPlayingItemBg = (newIndex) => {
-        clickIndex.value = newIndex
-        useYoutubeData.latestIndex = newIndex
-        
-    }
+// variables
+const useYoutubeData = useYoutubeDataStore()
+const snippetData = ref([])
 
-    //修正歌單位置
-    const modifyListItemPos = (index)  => {
-        if(index < 3){
-            scrollRef.value.setScrollTop(0)
-            return
-        }
-        if(listItemsRef.value){
-            console.log(listItemsRef.value);
-            console.log(listItemsRef.value);
-            let top = listItemsRef.value[index].getBoundingClientRect().height * (index-4)
-            console.log(scrollRef.value.setScrollTop(top));
-            console.log(listItemsRef.value[index].getBoundingClientRect());
-        }
-        
-    }
+const title = ref('')
+const videoId = ref('')
+const id = ref(0)
+const isPrepare = ref(false)
+const isPlaying = ref(false)
+const playerRef = ref(null)
+const scrollRef = ref(null)
+const clickIndex = ref(-1)
+let timeOut = null
+const next = ref({
+  prevItem: Object,
+  prevIndex: Number,
+  nextItem: Object,
+  nextIndex: Number
+})
+const listItemsRef = ref([])
+const isSearching = ref(false)
 
-    const showSearching = (state) => {
-        if(!state){
-            isSearching.value = false
-            window.addEventListener('keydown', handleGlobalKeyDown);
-            return
-        }
-        console.log(isSearching);
-        isSearching.value = true
-        window.removeEventListener('keydown', handleGlobalKeyDown);
-    }
+// methods
+// 載入歌曲
+const loadVideo = (item, index) => {
+  if (item) {
+    id.value = index
+    title.value = item.title
+    isPrepare.value = true
+    videoId.value = item.resourceId.videoId
+    changeIsPlayingItemBg(index)
+    modifyListItemPos(index)
+    // console.log(videoId.value);
+    next.value.prevIndex = index - 1
+    next.value.prevItem = snippetData.value[index - 1]
+    next.value.nextIndex = index + 1
+    next.value.nextItem = snippetData.value[index + 1]
+  }
+}
+// 改變正在播放歌曲的背景
+const changeIsPlayingItemBg = (newIndex) => {
+  clickIndex.value = newIndex
+  useYoutubeData.latestIndex = newIndex
+}
 
+// 修正歌單位置
+const modifyListItemPos = (index) => {
+  if (index < 3) {
+    scrollRef.value.setScrollTop(0)
+    return
+  }
+  if (listItemsRef.value) {
+    console.log(listItemsRef.value)
+    console.log(listItemsRef.value)
+    const top = listItemsRef.value[index].getBoundingClientRect().height * (index - 4)
+    console.log(scrollRef.value.setScrollTop(top))
+    console.log(listItemsRef.value[index].getBoundingClientRect())
+  }
+}
 
-    //切換歌曲上下首
-    const changeToNext = () => {
-        if(next.value.nextIndex > snippetData.value.length-1){
-            next.value.nextIndex = 0
-            next.value.nextItem = snippetData.value[0]
-        }
-        loadVideo(next.value.nextItem, next.value.nextIndex)
-    }
-    const changeToPrev = () => {
-        if(next.value.prevIndex < 0){
-            next.value.prevIndex = snippetData.value.length-1
-            next.value.prevItem = snippetData.value[snippetData.value.length-1]       
-        }
-        loadVideo(next.value.prevItem, next.value.prevIndex)   
-    }
+const showSearching = (state) => {
+  if (!state) {
+    isSearching.value = false
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return
+  }
+  console.log(isSearching)
+  isSearching.value = true
+  window.removeEventListener('keydown', handleGlobalKeyDown)
+}
 
-    // 獲取從youtubeplayer組件中emit過來的狀態
-    const getPlayerState = (state) => {
-        // console.log(state);
-        clearTimeout(timeOut)
-        if(state.data === 0){
-            changeToNext()
-        }
-        else if(state.data === 1){
-            isPlaying.value = true   
-        }
-        else if(state.data === 2){
-            isPlaying.value = false
-        }
-        else{
-            timeOut = setTimeout(() => {
-                if(state.data === -1){
-                    changeToNext()
-                }
-            },1000)
-        }
-    }
+// 切換歌曲上下首
+const changeToNext = () => {
+  if (next.value.nextIndex > snippetData.value.length - 1) {
+    next.value.nextIndex = 0
+    next.value.nextItem = snippetData.value[0]
+  }
+  loadVideo(next.value.nextItem, next.value.nextIndex)
+}
+const changeToPrev = () => {
+  if (next.value.prevIndex < 0) {
+    next.value.prevIndex = snippetData.value.length - 1
+    next.value.prevItem = snippetData.value[snippetData.value.length - 1]
+  }
+  loadVideo(next.value.prevItem, next.value.prevIndex)
+}
 
-    const pauseVideo = () => {
+// 獲取從youtubeplayer組件中emit過來的狀態
+const getPlayerState = (state) => {
+  // console.log(state);
+  clearTimeout(timeOut)
+  if (state.data === 0) {
+    changeToNext()
+  } else if (state.data === 1) {
+    isPlaying.value = true
+  } else if (state.data === 2) {
+    isPlaying.value = false
+  } else {
+    timeOut = setTimeout(() => {
+      if (state.data === -1) {
+        changeToNext()
+      }
+    }, 1000)
+  }
+}
+
+const pauseVideo = () => {
+  playerRef.value.pause()
+}
+
+const playVideo = () => {
+  playerRef.value.play()
+}
+
+const seekTo = async (seconds) => {
+  let currentTime = await playerRef.value.getCurrentTime()
+  console.log(currentTime)
+  currentTime += seconds
+  playerRef.value.seekTo(currentTime)
+}
+const setVolume = async (volume) => {
+  let currentVolume = await playerRef.value.getVolume()
+  currentVolume += volume
+  playerRef.value.setVolume(currentVolume)
+}
+const setRandomPlay = () => {
+  for (let i = snippetData.value.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [snippetData.value[i], snippetData.value[j]] = [snippetData.value[j], snippetData.value[i]]
+  }
+  loadVideo(snippetData.value[0], 0)
+}
+
+// const download = async (item) => {
+//     try{
+//         const res = await downloadData(item.resourceId.videoId)
+//         const blob = await res.blob()
+//         const url = URL.createObjectURL(blob);
+//         const a = document.createElement('a')
+//         a.href = url
+//         a.download = `${item.title}.mp3`
+//         document.body.appendChild(a)
+//         a.click()
+//         document.body.removeChild(a)
+//         console.log(url);
+//     }catch(err){
+//         console.log(err);
+//     }
+// }
+
+const handleGlobalKeyDown = (e) => {
+  // 避免方向鍵觸發滾動條
+  // e.preventDefault();
+  // console.log(e.keyCode );
+  // w
+  if (e.keyCode === 87) {
+    changeToPrev()
+  } else if (e.keyCode === 83) { // s
+    changeToNext()
+  } else if (e.keyCode === 65) { // a
+    seekTo(-5)
+  } else if (e.keyCode === 68) { // d
+    seekTo(5)
+  } else if (e.keyCode === 32) { // space
+    switch (isPlaying.value) {
+      case true:
         playerRef.value.pause()
+        break
+      case false:
+        playerRef.value.play()
+        break
+      default: break
+    }
+  } else if (e.keyCode === 38) { // ArrowTop
+    e.preventDefault()
+    setVolume(5)
+  } else if (e.keyCode === 40) { // ArrowBottom
+    e.preventDefault()
+    setVolume(-5)
+  } else if (e.keyCode === 37) { // ArrowLeft
+    seekTo(-5)
+  } else if (e.keyCode === 39) { // ArrowRight
+    seekTo(5)
+  }
+}
+const listItems = (index) => (el) => {
+  // console.log(index);
+  listItemsRef.value[index] = el
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalKeyDown)
+  snippetData.value = [...useYoutubeData.snippetData]
+  // loadVideo(snippetData.value[useYoutubeData.latestIndex],useYoutubeData.latestIndex)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleGlobalKeyDown)
+})
+
+watch(
+  () => useYoutubeData.isLoaded,
+  (newvalue) => {
+    console.log('====================================')
+    console.log(useYoutubeData.isLoaded)
+    console.log('====================================')
+    if (newvalue) {
+      // loadVideo(snippetData.value[0],0)
+      snippetData.value = [...useYoutubeData.snippetData]
     }
 
-    const playVideo = () => {
-            playerRef.value.play()
-    }
-    
-    const seekTo = async (seconds) => {
-        let currentTime = await playerRef.value.getCurrentTime()
-        console.log(currentTime);
-        currentTime += seconds
-        playerRef.value.seekTo(currentTime)
-    }
-    const setVolume = async (volume) => {
-        let currentVolume = await playerRef.value.getVolume()
-        currentVolume += volume
-        playerRef.value.setVolume(currentVolume)
-    }
-    const setRandomPlay = () => {
-        for (let i = snippetData.value.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [snippetData.value[i], snippetData.value[j]] = [snippetData.value[j], snippetData.value[i]];
-        }
-        loadVideo(snippetData.value[0],0)
-    }
-
-    // const download = async (item) => {
-    //     try{
-    //         const res = await downloadData(item.resourceId.videoId)
-    //         const blob = await res.blob()
-    //         const url = URL.createObjectURL(blob);
-    //         const a = document.createElement('a')
-    //         a.href = url
-    //         a.download = `${item.title}.mp3`
-    //         document.body.appendChild(a)
-    //         a.click()
-    //         document.body.removeChild(a)
-    //         console.log(url);
-    //     }catch(err){
-    //         console.log(err);
-    //     }
-    // }
-
-    const handleGlobalKeyDown = (e) => {
-        // 避免方向鍵觸發滾動條
-        // e.preventDefault();  
-        // console.log(e.keyCode );
-        //w
-        if(e.keyCode === 87){
-            changeToPrev()
-        }
-        //s
-        else if(e.keyCode === 83){
-            changeToNext()
-        }
-        //a
-        else if(e.keyCode === 65){
-            seekTo(-5)
-        }
-        //d
-        else if(e.keyCode === 68){
-            seekTo(5)
-        }
-        // space
-        else if(e.keyCode === 32){
-            switch (isPlaying.value){
-                case true:
-                    playerRef.value.pause()
-                    break;
-                case false:
-                    playerRef.value.play()
-                    break;
-                default: break;
-            }  
-        }
-        // ArrowTop
-        else if(e.keyCode === 38){
-            e.preventDefault()
-            setVolume(5)
-        }
-        // ArrowBottom
-        else if(e.keyCode === 40){
-            e.preventDefault()
-            setVolume(-5)
-        }
-        // ArrowLeft
-        else if(e.keyCode === 37){
-            seekTo(-5)
-        }
-        // ArrowRight
-        else if(e.keyCode === 39){
-            seekTo(5)
-        }
-    }
-    const listItems = (index) => (el) => {
-        // console.log(index);
-        listItemsRef.value[index] = el
-    }
-
-    onMounted(() => {
-        window.addEventListener('keydown', handleGlobalKeyDown);
-        snippetData.value = [...useYoutubeData.snippetData]
-        // loadVideo(snippetData.value[useYoutubeData.latestIndex],useYoutubeData.latestIndex)
-        
-    })
-
-    onBeforeUnmount(() => {
-        window.removeEventListener('keydown', handleGlobalKeyDown);
-    })
-
-    watch(
-        () => useYoutubeData.isLoaded,
-        (newvalue) => {
-            console.log('====================================');
-            console.log(useYoutubeData.isLoaded);
-            console.log('====================================');
-            if(newvalue){
-                // loadVideo(snippetData.value[0],0)
-                snippetData.value = [...useYoutubeData.snippetData]
-            }
-
-            
-            console.log('====================================');
-            console.log(useYoutubeData.snippetData);
-            console.log('====================================');
-            useYoutubeData.latestIndex = 0
-        }
-    )
+    console.log('====================================')
+    console.log(useYoutubeData.snippetData)
+    console.log('====================================')
+    useYoutubeData.latestIndex = 0
+  }
+)
 </script>
 
 <style scoped>
@@ -328,12 +301,11 @@
     button{
         background: black;
         box-shadow: 0px 3px 0px rgba(163, 26, 26, 1.0);
-        
+
     }
 
     button:hover {
         border-color: #646cff;
     }
-
 
 </style>

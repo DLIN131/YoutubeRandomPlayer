@@ -10,9 +10,9 @@
 </template>
 
 <script setup>
-    const props = defineProps({
-        title: String,
-    }) 
+defineProps({
+  title: String
+})
 </script>
 
 <style scoped>
@@ -32,7 +32,6 @@
   min-width: 35rem;
 }
 
-
 .name{
   color: white;
 }
@@ -49,7 +48,7 @@
 .artist {
   font-size: 0.6em;
 }
-/* 
+/*
 @keyframes move6 {
   0% {
     height: 0.2em;
