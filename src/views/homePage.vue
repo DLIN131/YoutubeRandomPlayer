@@ -98,7 +98,6 @@ const fetchData = () => {
   useYoutubeData.getListName(listId.value)
   useYoutubeData.latestIndex = 0
   // console.log(useYoutubeData.snippetData);
-  console.log(useYoutubeData.listNameData)
 
   isLoading.value = false
 }

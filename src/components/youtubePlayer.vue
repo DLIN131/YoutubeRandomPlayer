@@ -1,11 +1,10 @@
 <template>
-    <div class="flex items-center flex-col">
-        <div class="youtube-video">
-            <div :id="'youtube-' + id"></div>
-        </div>
-        <titleCard :title="title"></titleCard>
+  <div class="flex items-center flex-col">
+    <div class="youtube-video">
+      <div :id="'youtube-' + id"></div>
     </div>
-
+    <titleCard :title="title"></titleCard>
+  </div>
 </template>
 
 <script setup>
@@ -27,7 +26,6 @@ onMounted(() => {
   initPlayer()
   loadPlayer()
   addStateChange()
-  console.log(player)
 })
 
 onBeforeUnmount(() => {

@@ -1,62 +1,59 @@
 <template>
-    <div class="flex justify-between ">
-        <div  class="flex flex-col w-8/12 items-center">
-            <div>
-                <youtubePlayer
-                    v-if="isPrepare"
-                    :width="600"
-                    :height="400"
-                    :vid="videoId"
-                    :title="title"
-                    :id="id"
-                    ref="playerRef"
-                    @changeState="getPlayerState">
-                </youtubePlayer>
+  <div class="flex justify-between ">
+    <div class="flex flex-col w-8/12 items-center">
+      <div>
+        <youtubePlayer v-if="isPrepare" :width="600" :height="400" :vid="videoId" :title="title" :id="id" ref="playerRef"
+          @changeState="getPlayerState">
+        </youtubePlayer>
 
-                <div v-else>waiting fo video...</div>
-            </div>
-            <div v-if="isPrepare" id="buttonArea"
-                class=" bg-transparent/[.7]
+        <div v-else>waiting fo video...</div>
+      </div>
+      <div v-if="isPrepare" id="buttonArea" class=" bg-transparent/[.7]
                 shadow-inner  shadow-gray-600 w-[75%] mt-10 flex flex-col
                 justify-center items-center rounded-xl p-5">
-                <div class="flex items-center gap-2 flex-wrap">
-                    <button @click="changeToPrev" class=""><el-icon><ArrowLeftBold/></el-icon></button>
-                    <button v-if="isPlaying" @click="pauseVideo" class=" w-24 h-24 text-5xl rounded-full">
-                        <el-icon >
-                            <VideoPause />
-                        </el-icon>
-                    </button>
-                    <button  v-else @click="playVideo" class=" w-24 h-24 text-5xl rounded-full ">
-                        <el-icon>
-                            <VideoPlay/>
-                        </el-icon>
-                    </button>
-                    <button @click="changeToNext"><el-icon><ArrowRightBold/></el-icon></button>
-                </div>
-                <div class="flex items-center mt-2 gap-2 flex-wrap">
-                    <button @click="setRandomPlay" :disabled="!useYoutubeData.isLoaded">Random</button>
-                    <button><el-icon><Sort class="rotate-90"/></el-icon></button>
-                    <button @click="showSearching"><el-icon><Search /></el-icon></button>
-                </div>
-            </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <button @click="changeToPrev" class=""><el-icon>
+              <ArrowLeftBold />
+            </el-icon></button>
+          <button v-if="isPlaying" @click="pauseVideo" class=" w-24 h-24 text-5xl rounded-full">
+            <el-icon>
+              <VideoPause />
+            </el-icon>
+          </button>
+          <button v-else @click="playVideo" class=" w-24 h-24 text-5xl rounded-full ">
+            <el-icon>
+              <VideoPlay />
+            </el-icon>
+          </button>
+          <button @click="changeToNext"><el-icon>
+              <ArrowRightBold />
+            </el-icon></button>
         </div>
-        <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData"/>
-        <!-- 顯示影片清單區域 -->
-
-        <el-scrollbar ref="scrollRef"  class="ml-3 flex flex-col" max-height="100vh"   always>
-            <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{useYoutubeData.snippetData.length}}]</div>
-            <div v-for="(item, index) in snippetData"
-                    :key="index"
-                    @click="loadVideo(item,index)"
-                    :ref="listItems(index)"
-                    :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center
-                     bg-black  w-full cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
-                       text-white`, {colorBackground:clickIndex === index}]">
-                    <img :src="item.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
-                    {{item.position+" "+item.title}}
-            </div>
-        </el-scrollbar>
+        <div class="flex items-center mt-2 gap-2 flex-wrap">
+          <button @click="setRandomPlay" :disabled="!useYoutubeData.isLoaded">Random</button>
+          <button><el-icon>
+              <Sort class="rotate-90" />
+            </el-icon></button>
+          <button @click="showSearching"><el-icon>
+              <Search />
+            </el-icon></button>
+        </div>
+      </div>
     </div>
+    <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData" />
+    <!-- 顯示影片清單區域 -->
+
+    <el-scrollbar ref="scrollRef" class="ml-3 flex flex-col" max-height="100vh" always>
+      <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
+      <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
+        :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center
+                     bg-black  w-full cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
+                       text-white`, { colorBackground: clickIndex === index }]">
+        <img :src="item.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
+        {{ item.position + " " + item.title }}
+      </div>
+    </el-scrollbar>
+  </div>
 </template>
 
 <script setup>
@@ -126,11 +123,9 @@ const modifyListItemPos = (index) => {
     return
   }
   if (listItemsRef.value) {
-    console.log(listItemsRef.value)
-    console.log(listItemsRef.value)
     const top = listItemsRef.value[index].getBoundingClientRect().height * (index - 4)
-    console.log(scrollRef.value.setScrollTop(top))
-    console.log(listItemsRef.value[index].getBoundingClientRect())
+    scrollRef.value.setScrollTop(top)
+    listItemsRef.value[index].getBoundingClientRect()
   }
 }
 
@@ -140,7 +135,6 @@ const showSearching = (state) => {
     window.addEventListener('keydown', handleGlobalKeyDown)
     return
   }
-  console.log(isSearching)
   isSearching.value = true
   window.removeEventListener('keydown', handleGlobalKeyDown)
 }
@@ -190,7 +184,6 @@ const playVideo = () => {
 
 const seekTo = async (seconds) => {
   let currentTime = await playerRef.value.getCurrentTime()
-  console.log(currentTime)
   currentTime += seconds
   playerRef.value.seekTo(currentTime)
 }
@@ -277,35 +270,28 @@ onBeforeUnmount(() => {
 watch(
   () => useYoutubeData.isLoaded,
   (newvalue) => {
-    console.log('====================================')
-    console.log(useYoutubeData.isLoaded)
-    console.log('====================================')
     if (newvalue) {
       // loadVideo(snippetData.value[0],0)
       snippetData.value = [...useYoutubeData.snippetData]
     }
-
-    console.log('====================================')
-    console.log(useYoutubeData.snippetData)
-    console.log('====================================')
     useYoutubeData.latestIndex = 0
   }
 )
 </script>
 
 <style scoped>
-    .colorBackground {
-        background-color: rgba(0, 218, 247, 0.308);
-        border-left: 4px solid rgb(149, 149, 236);
-    }
-    button{
-        background: black;
-        box-shadow: 0px 3px 0px rgba(163, 26, 26, 1.0);
+.colorBackground {
+  background-color: rgba(0, 218, 247, 0.308);
+  border-left: 4px solid rgb(149, 149, 236);
+}
 
-    }
+button {
+  background: black;
+  box-shadow: 0px 3px 0px rgba(163, 26, 26, 1.0);
 
-    button:hover {
-        border-color: #646cff;
-    }
+}
 
+button:hover {
+  border-color: #646cff;
+}
 </style>
