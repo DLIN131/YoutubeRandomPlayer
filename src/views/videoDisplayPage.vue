@@ -230,7 +230,8 @@ const handleGlobalKeyDown = (e) => {
     seekTo(-5)
   } else if (e.keyCode === 68) { // d
     seekTo(5)
-  } else if (e.keyCode === 32) { // space
+  } else if (e.keyCode === 32) {
+    e.preventDefault() // space
     switch (isPlaying.value) {
       case true:
         playerRef.value.pause()
