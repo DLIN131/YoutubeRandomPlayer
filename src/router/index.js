@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import videoDisplayPage from '../views/videoDisplayPage.vue'
 
 const router = createRouter({
   // vite.config.js base
@@ -15,7 +16,7 @@ const router = createRouter({
         }, // download page
         {
           path: '/player',
-          component: () => import('../views/videoDisplayPage.vue')
+          component: videoDisplayPage
         }
       ]
     } // home page
