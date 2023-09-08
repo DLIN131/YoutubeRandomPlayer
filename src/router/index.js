@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import videoDisplayPage from '../views/videoDisplayPage.vue'
+import homePage from '../views/homePage.vue'
 
 const router = createRouter({
   // vite.config.js base
@@ -7,15 +8,15 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('../views/homePage.vue'),
-      redirect: '/player',
+      component: homePage,
+      redirect: 'player',
       children: [
         {
-          path: '/download',
+          path: 'download',
           component: () => import('../views/downloadPage.vue')
         }, // download page
         {
-          path: '/player',
+          path: 'player',
           component: videoDisplayPage
         }
       ]
