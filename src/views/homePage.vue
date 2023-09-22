@@ -32,7 +32,7 @@
       <el-header style="text-align: center; font-size: 16px" class=" shadow-lg shadow-black z-10">
         <div class="w-full h-full p-1  flex justify-center gap-3 items-center relative">
           <button v-if="notDisplaySideMenu" @click="toggleMenu"
-            class=" w-11 h-11 rounded-md flex items-center justify-center z-10 bg-black ">
+            class=" w-11 h-11 min-w-[2.75rem] rounded-md flex items-center justify-center z-10 bg-black ">
             <el-icon>
               <Expand />
             </el-icon>
@@ -56,23 +56,42 @@
             <button @click="fetchData" class=" bg-black">append</button>
             <img v-if="isLoading" class=" w-10 h-10" src="../assets/img/hutoa01-unscreen.gif" alt="">
           </span>
+          <div v-if="!userStore.accessToken" class="p-1 min-w-fit bg-red-400 rounded-md border-l-fuchsia-200 border">
+            <router-link to="/login">登入/註冊</router-link>
+          </div>
+          <div v-else class=" flex items-center justify-evenly w-24 min-w-[6rem]">
+            <img width="30" :src="userStore.userInfo.avatar" alt="user" class=" rounded-full">
+            <span>{{ userStore.userInfo.name }}</span>
+            <el-dropdown trigger="click" @command="handleUserCommand">
+              <span class="pt-1 cursor-pointer text-black ">
+                <el-icon>
+                  <CaretBottom />
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="logout">登出</el-dropdown-item>
+                  <el-dropdown-item command="upload">上傳清單</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+
+          </div>
         </div>
       </el-header>
       <!-- songList -->
-      <el-scrollbar>
-        <el-main class="flex justify-centeritems-center min-w-96 h-[100vh]">
-          <router-view></router-view>
-        </el-main>
-      </el-scrollbar>
+      <el-main class="flex justify-centeritems-center min-w-96 h-[100vh]">
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script lang="ts" setup>
 // import
-import { ref } from 'vue'
-import { House, Download, Expand, Fold, List } from '@element-plus/icons-vue'
-import { useYoutubeDataStore } from '../stores'
+import { ref, onMounted } from 'vue'
+import { House, Download, Expand, Fold, List, CaretBottom } from '@element-plus/icons-vue'
+import { useYoutubeDataStore, useUserStore, usePlaylistStore } from '../stores'
 
 // variables
 const isLoading = ref(false)
@@ -80,7 +99,8 @@ const useYoutubeData = useYoutubeDataStore()
 const listId = ref('')
 const notDisplaySideMenu = ref(true)
 const listNames = ref(useYoutubeData.listNameData) // array
-
+const userStore = useUserStore()
+const playlistStore = usePlaylistStore()
 // methods
 const fetchData = () => {
   const pattern = /list=([a-zA-Z0-9_-]+)/
@@ -104,9 +124,46 @@ const fetchData = () => {
 const handleCommand = (command) => {
   listId.value = command
 }
+
+const handleUserCommand = async (command) => {
+  if (command === 'logout') {
+    userStore.accessToken = ''
+    userStore.userInfo = {
+      userId: '',
+      username: '',
+      email: '',
+      avatar: '',
+      creatAt: undefined,
+      __v: undefined
+    }
+  } else if (command === 'upload') {
+    const listname = useYoutubeData.currentListName
+    const playlist = useYoutubeData.snippetData
+    const chunkSize = Math.ceil(playlist.length / 20)
+    console.log(chunkSize);
+    for (let i = 0; i < playlist.length; i += chunkSize) {
+      const chunk = playlist.slice(i, i + chunkSize);
+      const formData = new FormData()
+      formData.append('dataChunk', JSON.stringify(chunk));
+      console.log(formData.getAll('dataChunk'));
+      const res = await playlistStore.postPlaylist(listname, formData.getAll('dataChunk'), playlist.length)
+      console.log(res);
+
+    }
+
+
+
+    // console.log(res);
+
+  }
+}
 const toggleMenu = () => {
   notDisplaySideMenu.value = !notDisplaySideMenu.value
 }
+
+onMounted(() => {
+  userStore.authLogin()
+})
 
 </script>
 
@@ -150,5 +207,6 @@ const toggleMenu = () => {
   padding: 0.5rem;
   border-radius: 0.5rem;
   color: white;
+  min-width: 7rem;
 }
 </style>

@@ -1,12 +1,11 @@
 <template>
   <div class="flex justify-between ">
     <div class="flex flex-col w-8/12 items-center">
-      <div>
+      <div class="player">
         <youtubePlayer v-if="isPrepare" :width="600" :height="400" :vid="videoId" :title="title" :id="id" ref="playerRef"
           @changeState="getPlayerState">
         </youtubePlayer>
-
-        <div v-else>waiting fo video...</div>
+        <div v-else class="text-white">waiting fo video...</div>
       </div>
       <div v-if="isPrepare" id="buttonArea" class=" bg-transparent/[.7]
                 shadow-inner  shadow-gray-600 w-[75%] mt-10 flex flex-col
@@ -31,9 +30,11 @@
         </div>
         <div class="flex items-center mt-2 gap-2 flex-wrap">
           <button @click="setRandomPlay" :disabled="!useYoutubeData.isLoaded">Random</button>
-          <button><el-icon>
+          <button @click="setOrderPlay">
+            <el-icon>
               <Sort class="rotate-90" />
-            </el-icon></button>
+            </el-icon>
+          </button>
           <button @click="showSearching"><el-icon>
               <Search />
             </el-icon></button>
@@ -46,11 +47,17 @@
     <el-scrollbar ref="scrollRef" class="ml-3 flex flex-col" max-height="100vh" always>
       <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
       <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
-        :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center
-                     bg-black  w-full cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
+        :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center relative
+                     bg-black  w-full min-w-[7rem] cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
                        text-white`, { colorBackground: clickIndex === index }]">
-        <img :src="item.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
-        {{ item.position + " " + item.title }}
+        <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
+        {{ item.snippet.position + " " + item.snippet.title }}
+        <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
+          { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
+          <el-icon>
+            <Download />
+          </el-icon>
+        </span>
       </div>
     </el-scrollbar>
   </div>
@@ -62,13 +69,15 @@ import { useYoutubeDataStore } from '../stores'
 import { ref, onBeforeUnmount, onMounted, watch } from 'vue'
 import youtubePlayer from '../components/youtubePlayer.vue'
 import searchCard from '../components/searchCard.vue'
+import { downloadData } from '../api/downloadData'
 import {
   ArrowLeftBold,
   ArrowRightBold,
   VideoPlay,
   VideoPause,
   Search,
-  Sort
+  Sort,
+  Download
 } from '@element-plus/icons-vue'
 
 // variables
@@ -83,6 +92,7 @@ const isPlaying = ref(false)
 const playerRef = ref(null)
 const scrollRef = ref(null)
 const clickIndex = ref(-1)
+const isDownloading = ref([])
 let timeOut = null
 const next = ref({
   prevItem: Object,
@@ -98,9 +108,9 @@ const isSearching = ref(false)
 const loadVideo = (item, index) => {
   if (item) {
     id.value = index
-    title.value = item.title
+    title.value = item.snippet.title
     isPrepare.value = true
-    videoId.value = item.resourceId.videoId
+    videoId.value = item.snippet.resourceId.videoId
     changeIsPlayingItemBg(index)
     modifyListItemPos(index)
     // console.log(videoId.value);
@@ -200,22 +210,29 @@ const setRandomPlay = () => {
   loadVideo(snippetData.value[0], 0)
 }
 
-// const download = async (item) => {
-//     try{
-//         const res = await downloadData(item.resourceId.videoId)
-//         const blob = await res.blob()
-//         const url = URL.createObjectURL(blob);
-//         const a = document.createElement('a')
-//         a.href = url
-//         a.download = `${item.title}.mp3`
-//         document.body.appendChild(a)
-//         a.click()
-//         document.body.removeChild(a)
-//         console.log(url);
-//     }catch(err){
-//         console.log(err);
-//     }
-// }
+const setOrderPlay = () => {
+  snippetData.value = [...useYoutubeData.snippetData]
+  loadVideo(snippetData.value[0], 0)
+}
+
+const download = async (item, index) => {
+  try {
+    isDownloading.value[index] = true
+    const res = await downloadData(item.snippet.resourceId.videoId)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${item.snippet.title}.mp3`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    isDownloading.value[index] = false
+    console.log(url);
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 const handleGlobalKeyDown = (e) => {
   // 避免方向鍵觸發滾動條
@@ -291,6 +308,11 @@ button {
   box-shadow: 0px 3px 0px rgba(163, 26, 26, 1.0);
 
 }
+
+.downloadBg {
+  background-color: green;
+}
+
 
 button:hover {
   border-color: #646cff;

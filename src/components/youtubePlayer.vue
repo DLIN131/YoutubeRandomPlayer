@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center flex-col">
-    <div class="youtube-video">
+    <div class="youtube-video ">
       <div :id="'youtube-' + id"></div>
     </div>
     <titleCard :title="title"></titleCard>

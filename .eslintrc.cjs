@@ -1,7 +1,7 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true
+    es6: true
   },
   extends: [
     'standard',
@@ -31,7 +31,8 @@ module.exports = {
     'vue/multi-word-component-names': [
       'warn',
       {
-        ignores: ['index']
+        ignores: ['index'],
+        indent: ['error', 4]
       }
     ],
     'vue/no-setup-props-destructure': ['off'],

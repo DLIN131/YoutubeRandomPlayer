@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { fetchYoutubeData, fetchPlayListName } from '../../api/fetchYoutubeDate'
+import { fetchYoutubeData, fetchPlayListName, deleteListItem } from '../../api/fetchYoutubeData'
 import { ref } from 'vue'
 import { API_KEY } from '../../utils/apiKey'
 // user module token and setToken removeToken
@@ -9,11 +9,13 @@ export const useYoutubeDataStore = defineStore('data', () => {
   const snippetData = ref([])
   const listNameData = ref([])
   const latestIndex = ref(0)
-  const isLoaded = ref(false)
+  const isLoaded = ref(true)
+  const currentListName = ref('')
+
   // methods
   const getSnippetData = async (id) => {
     const params = ref({
-      part: 'contentDetails,snippet,status', // 必填，把需要的資訊列出來
+      part: 'contentDetails,id,snippet,status', // 必填，把需要的資訊列出來
       playlistId: id, // 播放清單的id
       maxResults: 50, // 預設為五筆資料，可以設定1~50
       pageToken: '',
@@ -29,8 +31,23 @@ export const useYoutubeDataStore = defineStore('data', () => {
         // console.log(res.data);
         res.data.items.forEach(item => {
           if (item.snippet.title !== 'Deleted video' &&
-                        item.snippet.title !== 'Private video') {
-            snippetData.value.push(item.snippet)
+            item.snippet.title !== 'Private video') {
+            const filterData = {
+              id: item.id,
+              snippet: {
+                position: item.snippet.position,
+                resourceId: {
+                  videoId: item.snippet.resourceId.videoId
+                },
+                thumbnails: {
+                  medium: {
+                    url: item.snippet.thumbnails.medium.url
+                  }
+                },
+                title: item.snippet.title
+              }
+            }
+            snippetData.value.push(filterData)
           }
         })
         params.value.pageToken = res.data.nextPageToken
@@ -54,6 +71,7 @@ export const useYoutubeDataStore = defineStore('data', () => {
         name: res.data.items[0].snippet.title,
         value: listId
       }
+      currentListName.value = listIdData.name //儲存最近的一次清單名字資料
       let isExist = false
       listNameData.value.forEach((item) => {
         if (item.value === listIdData.value) {
@@ -72,15 +90,28 @@ export const useYoutubeDataStore = defineStore('data', () => {
     return isLoaded.value ? snippetData.value : []
   }
 
+  const deleteItem = async (id) => {
+    try {
+      const res = await deleteListItem('/playlistItems', id)
+      console.log(res)
+      if (res) {
+        snippetData.value.splice(snippetData.value.indexOf(id), 1)
+      }
+    } catch (error) {
+      console.log('delete item error')
+    }
+  }
   // return
   return {
+    currentListName,
     listNameData,
     getListName,
     snippetData,
     getSnippetData,
     latestIndex,
     isLoaded,
-    getCompleteData
+    getCompleteData,
+    deleteItem
   }
 }, {
   persist: true
