@@ -1,20 +1,16 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useUserStore } from "./user"
-import { updatePlaylistData, postPlaylistData, fetchPlaylistData } from "../../api/dealPlaylist"
-
-
-
+import { useUserStore } from './user'
+import { updatePlaylistData, postPlaylistData, fetchPlaylistData } from '../../api/dealPlaylist'
 
 export const usePlaylistStore = defineStore('playlist', () => {
-
-  //variable
-  const userStore = useUserStore();
-  const playlist = ref([]);
+  // variable
+  const userStore = useUserStore()
+  const playlist = ref([])
   // methods
   const postPlaylist = async (name, list, length) => {
     if (!userStore.userInfo.userId) {
-      console.log('not have userId');
+      console.log('not have userId')
       return false
     }
     const params = {
@@ -32,9 +28,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
       listname: name,
       playlist: list
     }
-    const uid = userStore.userId;
-    return res = await updatePlaylistData(uid, params)
-
+    const uid = userStore.userId
+    return await updatePlaylistData(uid, params)
   }
 
   const fetchPlaylist = async (name) => {
@@ -42,8 +37,8 @@ export const usePlaylistStore = defineStore('playlist', () => {
       userId: userStore.userId,
       listname: name
     }
-    res = await fetchPlaylistData(params)
-    playlist.value = res.data.playlist;
+    const res = await fetchPlaylistData(params)
+    playlist.value = res.data.playlist
   }
   return {
     playlist,

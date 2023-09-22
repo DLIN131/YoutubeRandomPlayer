@@ -25,7 +25,7 @@ import { useYoutubeDataStore } from '../stores'
 import { ref, onMounted } from 'vue'
 import { downloadData } from '../api/downloadData'
 import {
-    Download
+  Download
 } from '@element-plus/icons-vue'
 
 const useYoutubeData = useYoutubeDataStore()
@@ -34,39 +34,33 @@ const isDownloading = ref([])
 const inputValue = ref('')
 const isScrollBottom = ref(false)
 
-
-
 const handleSearch = () => {
-    snippetData.value = useYoutubeData.snippetData.filter((item) => {
-        return item.snippet.title.toLowerCase().match(inputValue.value.toLowerCase())
-    })
+  snippetData.value = useYoutubeData.snippetData.filter((item) => {
+    return item.snippet.title.toLowerCase().match(inputValue.value.toLowerCase())
+  })
 }
 
 const download = async (item, index) => {
-    try {
-        isDownloading.value[index] = true
-        const res = await downloadData(item.snippet.resourceId.videoId)
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `${item.snippet.title}.mp3`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        isDownloading.value[index] = false
-        console.log(url);
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    isDownloading.value[index] = true
+    const res = await downloadData(item.snippet.resourceId.videoId)
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${item.snippet.title}.mp3`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    isDownloading.value[index] = false
+    console.log(url)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
-
-
-
 onMounted(() => {
-    snippetData.value = [...useYoutubeData.snippetData]
-
+  snippetData.value = [...useYoutubeData.snippetData]
 })
 
 </script>

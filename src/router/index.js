@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import videoDisplayPage from '../views/videoDisplayPage.vue'
 import homePage from '../views/homePage.vue'
-import downloadPage from '../views/downloadPage.vue'
 
 const router = createRouter({
   // vite.config.js base

@@ -71,7 +71,7 @@ export const useYoutubeDataStore = defineStore('data', () => {
         name: res.data.items[0].snippet.title,
         value: listId
       }
-      currentListName.value = listIdData.name //儲存最近的一次清單名字資料
+      currentListName.value = listIdData.name // 儲存最近的一次清單名字資料
       let isExist = false
       listNameData.value.forEach((item) => {
         if (item.value === listIdData.value) {

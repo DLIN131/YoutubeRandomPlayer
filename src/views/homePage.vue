@@ -140,21 +140,17 @@ const handleUserCommand = async (command) => {
     const listname = useYoutubeData.currentListName
     const playlist = useYoutubeData.snippetData
     const chunkSize = Math.ceil(playlist.length / 20)
-    console.log(chunkSize);
+    console.log(chunkSize)
     for (let i = 0; i < playlist.length; i += chunkSize) {
-      const chunk = playlist.slice(i, i + chunkSize);
+      const chunk = playlist.slice(i, i + chunkSize)
       const formData = new FormData()
-      formData.append('dataChunk', JSON.stringify(chunk));
-      console.log(formData.getAll('dataChunk'));
+      formData.append('dataChunk', JSON.stringify(chunk))
+      console.log(formData.getAll('dataChunk'))
       const res = await playlistStore.postPlaylist(listname, formData.getAll('dataChunk'), playlist.length)
-      console.log(res);
-
+      console.log(res)
     }
 
-
-
     // console.log(res);
-
   }
 }
 const toggleMenu = () => {

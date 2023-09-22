@@ -31,8 +31,7 @@ module.exports = {
     'vue/multi-word-component-names': [
       'warn',
       {
-        ignores: ['index'],
-        indent: ['error', 4]
+        ignores: ['index']
       }
     ],
     'vue/no-setup-props-destructure': ['off'],

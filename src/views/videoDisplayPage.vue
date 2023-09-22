@@ -220,7 +220,7 @@ const download = async (item, index) => {
     isDownloading.value[index] = true
     const res = await downloadData(item.snippet.resourceId.videoId)
     const blob = await res.blob()
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = `${item.snippet.title}.mp3`
@@ -228,9 +228,9 @@ const download = async (item, index) => {
     a.click()
     document.body.removeChild(a)
     isDownloading.value[index] = false
-    console.log(url);
+    console.log(url)
   } catch (err) {
-    console.log(err);
+    console.log(err)
   }
 }
 
@@ -312,7 +312,6 @@ button {
 .downloadBg {
   background-color: green;
 }
-
 
 button:hover {
   border-color: #646cff;

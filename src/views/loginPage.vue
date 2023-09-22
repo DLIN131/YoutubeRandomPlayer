@@ -9,7 +9,6 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
 import { googleTokenLogin } from 'vue3-google-login'
 import { useUserStore } from '../stores'
 import { useRouter } from 'vue-router'
@@ -17,33 +16,25 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const userStore = useUserStore()
 const GOOGLE_CLIENT_ID = '959560237311-13dbj26mjffjcph7r49pq3c57lbvpgrr.apps.googleusercontent.com'
-const data = ref()
+// const data = ref()
 // methods
 const handleGoogleAccessTokenLogin = async () => {
-    const res = await googleTokenLogin({
-        clientId: GOOGLE_CLIENT_ID
-    })
-    const token = res.access_token
-    const success = await userStore.getUserInfo(token)
-    if (success) {
-        alert('登入成功')
-        router.push('./')
-        return
-    }
-    alert('登入失敗')
+  const res = await googleTokenLogin({
+    clientId: GOOGLE_CLIENT_ID
+  })
+  const token = res.access_token
+  const success = await userStore.getUserInfo(token)
+  if (success) {
+    alert('登入成功')
     router.push('./')
+    return
+  }
+  alert('登入失敗')
+  router.push('./')
 
-    console.log('====================================');
-    console.log(userStore.accessToken);
-    console.log('====================================');
-
-    watch(
-        () => userStore.isLogin,
-        (newValue) => {
-            if (newValue === true) {
-                router.push('./')
-            }
-        })
+  console.log('====================================')
+  console.log(userStore.accessToken)
+  console.log('====================================')
 }
 </script>
 

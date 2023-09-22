@@ -9,7 +9,7 @@ const app = createApp(App)
 app.use(router)
 app.use(pinia) // pinia插件配置
 app.use(vue3GoogleLogin, {
-    clientId: '959560237311-13dbj26mjffjcph7r49pq3c57lbvpgrr.apps.googleusercontent.com',
-    scope: 'profile email'
+  clientId: '959560237311-13dbj26mjffjcph7r49pq3c57lbvpgrr.apps.googleusercontent.com',
+  scope: 'profile email'
 }) // 登入插件
 app.mount('#app') // 圖像建置
