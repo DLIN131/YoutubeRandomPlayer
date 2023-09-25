@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useUserStore } from './user'
-import { updatePlaylistData, postPlaylistData, fetchPlaylistData } from '../../api/dealPlaylist'
+import { updatePlaylistData, postPlaylistData, fetchPlaylistData, fetchPlaylistNames } from '../../api/dealPlaylist'
 
 export const usePlaylistStore = defineStore('playlist', () => {
   // variable
   const userStore = useUserStore()
   const playlist = ref([])
+  const listnames = ref([])
   // methods
   const postPlaylist = async (name, list, length) => {
     if (!userStore.userInfo.userId) {
@@ -34,16 +35,34 @@ export const usePlaylistStore = defineStore('playlist', () => {
 
   const fetchPlaylist = async (name) => {
     const params = {
-      userId: userStore.userId,
+      userId: userStore.userInfo.userId,
       listname: name
     }
-    const res = await fetchPlaylistData(params)
-    playlist.value = res.data.playlist
+    try {
+      const res = await fetchPlaylistData(params)
+      playlist.value = res.data.data.playlist
+    } catch (error) {
+      console.log('fetch playlist from server err' + error)
+    }
+  }
+
+  const fetchNames = async () => {
+    const params = {
+      userId: userStore.userInfo.userId
+    }
+    try {
+      const res = await fetchPlaylistNames(params)
+      listnames.value = res.data.listnames
+    } catch (error) {
+      console.log('fetch listnames from server failed')
+    }
   }
   return {
     playlist,
+    listnames,
     postPlaylist,
     updatePlaylist,
-    fetchPlaylist
+    fetchPlaylist,
+    fetchNames
   }
 })

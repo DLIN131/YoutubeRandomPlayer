@@ -52,6 +52,11 @@
                        text-white`, { colorBackground: clickIndex === index }]">
         <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
         {{ item.snippet.position + " " + item.snippet.title }}
+        <span
+          class="w-7 h-7 flex justify-center items-center absolute right-3 rounded-md top-2 bg-slate-600 hover:bg-black"
+          @click.stop="handleDelete(item)">
+          X
+        </span>
         <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
           { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
           <el-icon>
@@ -65,7 +70,7 @@
 
 <script setup>
 // import
-import { useYoutubeDataStore } from '../stores'
+import { useYoutubeDataStore, usePlaylistStore } from '../stores'
 import { ref, onBeforeUnmount, onMounted, watch } from 'vue'
 import youtubePlayer from '../components/youtubePlayer.vue'
 import searchCard from '../components/searchCard.vue'
@@ -82,6 +87,7 @@ import {
 
 // variables
 const useYoutubeData = useYoutubeDataStore()
+const usePlaylist = usePlaylistStore()
 const snippetData = ref([])
 
 const title = ref('')
@@ -234,6 +240,10 @@ const download = async (item, index) => {
   }
 }
 
+const handleDelete = async (item) => {
+  await useYoutubeData.deleteItem(item.id)
+}
+
 const handleGlobalKeyDown = (e) => {
   // 避免方向鍵觸發滾動條
   // e.preventDefault();
@@ -286,15 +296,18 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => useYoutubeData.isLoaded,
-  (newvalue) => {
-    if (newvalue) {
-      // loadVideo(snippetData.value[0],0)
+  () => useYoutubeData.isLoaded, (newIsLoaded) => {
+    if (newIsLoaded) {
       snippetData.value = [...useYoutubeData.snippetData]
+      useYoutubeData.latestIndex = 0
     }
-    useYoutubeData.latestIndex = 0
-  }
-)
+  })
+watch(
+  () => usePlaylist.playlist, (newPlaylist) => {
+    if (newPlaylist) {
+      snippetData.value = [...newPlaylist]
+    }
+  })
 </script>
 
 <style scoped>

@@ -15,6 +15,7 @@ import { authUser } from '../../api/auth'
 
 export const useUserStore = defineStore('user', () => {
   const accessToken = ref('')
+  const oauthToken = ref('')
   const userInfo = ref({
     userId: '',
     username: '',
@@ -61,6 +62,7 @@ export const useUserStore = defineStore('user', () => {
   return {
     accessToken,
     userInfo,
+    oauthToken,
     authLogin,
     setToken,
     getUserInfo

@@ -19,3 +19,7 @@ export const postPlaylistData = (params) => {
 export const fetchPlaylistData = (params) => {
   return instance.get('/playlist', { params })
 }
+
+export const fetchPlaylistNames = (params) => {
+  return instance.get('/playlist/listname', { params })
+}

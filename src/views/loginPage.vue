@@ -1,11 +1,11 @@
 <template>
-    <div class="w-full h-screen flex justify-center items-center">
-        <div
-            class=" flex justify-center items-center login-card w-4/12 rounded-xl h-96 bg-gray-800 shadow-2xl shadow-black hover:shadow-sm transition-all duration-500">
-            <button @click="handleGoogleAccessTokenLogin"
-                class="bg-transparent w-48 mb-3 hover:bg-gray-300 hover:text-black transition-all duration-400 border-red-700">google登入</button>
-        </div>
+  <div class="w-full h-screen flex justify-center items-center bg-red-500">
+    <div
+      class=" flex justify-center items-center login-card min-w-[30rem] rounded-xl h-96 bg-gray-800 shadow-2xl shadow-black hover:shadow-sm transition-all duration-500">
+      <button @click="handleGoogleAccessTokenLogin"
+        class="bg-transparent w-48 mb-3 hover:bg-gray-300 hover:text-black transition-all duration-400 border-red-700">google登入</button>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -22,7 +22,9 @@ const handleGoogleAccessTokenLogin = async () => {
   const res = await googleTokenLogin({
     clientId: GOOGLE_CLIENT_ID
   })
+  console.log(res)
   const token = res.access_token
+  userStore.oauthToken = token
   const success = await userStore.getUserInfo(token)
   if (success) {
     alert('登入成功')
