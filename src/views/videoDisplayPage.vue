@@ -1,15 +1,19 @@
 <template>
   <div class="flex justify-between ">
     <div class="flex flex-col w-8/12 items-center">
-      <div class="player">
+      <div class="player" ref="playerContainerRef">
         <youtubePlayer v-if="isPrepare" :width="600" :height="400" :vid="videoId" :title="title" :id="id" ref="playerRef"
           @changeState="getPlayerState">
         </youtubePlayer>
         <div v-else class="text-white">waiting fo video...</div>
       </div>
       <div v-if="isPrepare" id="buttonArea" class=" bg-transparent/[.7]
-                shadow-inner  shadow-gray-600 w-[75%] mt-10 flex flex-col
+                shadow-inner  shadow-gray-600 w-8/12 min-w-fit mt-10 flex flex-col
                 justify-center items-center rounded-xl p-5">
+        <div class="text-white">
+          音量
+          <input v-model="volumeRange" @change="handleVolumeChange" type="range" name="progress" min="0" max="100">
+        </div>
         <div class="flex items-center gap-2 flex-wrap">
           <button @click="changeToPrev" class=""><el-icon>
               <ArrowLeftBold />
@@ -44,7 +48,7 @@
     <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData" />
     <!-- 顯示影片清單區域 -->
 
-    <el-scrollbar ref="scrollRef" class="ml-3 flex flex-col" max-height="100vh" always>
+    <el-scrollbar ref="scrollRef" class="customScrollbar ml-3 flex flex-col" max-height="100vh" always native="true">
       <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
       <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
         :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center relative
@@ -52,11 +56,6 @@
                        text-white`, { colorBackground: clickIndex === index }]">
         <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
         {{ item.snippet.position + " " + item.snippet.title }}
-        <span
-          class="w-7 h-7 flex justify-center items-center absolute right-3 rounded-md top-2 bg-slate-600 hover:bg-black"
-          @click.stop="handleDelete(item)">
-          X
-        </span>
         <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
           { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
           <el-icon>
@@ -89,6 +88,7 @@ import {
 const useYoutubeData = useYoutubeDataStore()
 const usePlaylist = usePlaylistStore()
 const snippetData = ref([])
+const volumeRange = ref(0)
 
 const title = ref('')
 const videoId = ref('')
@@ -96,6 +96,7 @@ const id = ref(0)
 const isPrepare = ref(false)
 const isPlaying = ref(false)
 const playerRef = ref(null)
+const playerContainerRef = ref(null)
 const scrollRef = ref(null)
 const clickIndex = ref(-1)
 const isDownloading = ref([])
@@ -111,7 +112,7 @@ const isSearching = ref(false)
 
 // methods
 // 載入歌曲
-const loadVideo = (item, index) => {
+const loadVideo = async (item, index) => {
   if (item) {
     id.value = index
     title.value = item.snippet.title
@@ -119,7 +120,6 @@ const loadVideo = (item, index) => {
     videoId.value = item.snippet.resourceId.videoId
     changeIsPlayingItemBg(index)
     modifyListItemPos(index)
-    // console.log(videoId.value);
     next.value.prevIndex = index - 1
     next.value.prevItem = snippetData.value[index - 1]
     next.value.nextIndex = index + 1
@@ -173,7 +173,8 @@ const changeToPrev = () => {
 
 // 獲取從youtubeplayer組件中emit過來的狀態
 const getPlayerState = (state) => {
-  // console.log(state);
+  console.log(state)
+  volumeRange.value = state.target.getVolume()
   clearTimeout(timeOut)
   if (state.data === 0) {
     changeToNext()
@@ -206,8 +207,15 @@ const seekTo = async (seconds) => {
 const setVolume = async (volume) => {
   let currentVolume = await playerRef.value.getVolume()
   currentVolume += volume
+  volumeRange.value = currentVolume
   playerRef.value.setVolume(currentVolume)
 }
+
+const handleVolumeChange = (e) => {
+  console.log(e)
+  playerRef.value.setVolume(volumeRange.value)
+}
+
 const setRandomPlay = () => {
   for (let i = snippetData.value.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -240,9 +248,9 @@ const download = async (item, index) => {
   }
 }
 
-const handleDelete = async (item) => {
-  await useYoutubeData.deleteItem(item.id)
-}
+// const handleDelete = async (item) => {
+//   await useYoutubeData.deleteItem(item.id)
+// }
 
 const handleGlobalKeyDown = (e) => {
   // 避免方向鍵觸發滾動條
@@ -308,6 +316,7 @@ watch(
       snippetData.value = [...newPlaylist]
     }
   })
+
 </script>
 
 <style scoped>
@@ -320,6 +329,32 @@ button {
   background: black;
   box-shadow: 0px 3px 0px rgba(163, 26, 26, 1.0);
 
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1b8b8;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #9af5cf;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #00ec6a;
+}
+
+.player {
+  perspective: 1000px;
+  transition: transform 0.3s ease;
+  /* transform: rotateY(45deg); */
 }
 
 .downloadBg {

@@ -1,7 +1,7 @@
 import axios from 'axios'
-
+import { BASE_URL } from '../utils/serverUrl'
 export const googleLogin = (token) => {
-  return axios.post('http://localhost:5000/google-login', {
+  return axios.post(`${BASE_URL}/google-login`, {
     access_token: token
   }, {
     headers: {

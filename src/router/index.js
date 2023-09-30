@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import videoDisplayPage from '../views/videoDisplayPage.vue'
 import homePage from '../views/homePage.vue'
+import { useUserStore } from '../stores'
 
 const router = createRouter({
   // vite.config.js base
@@ -36,12 +37,11 @@ const router = createRouter({
 // 3. 具體路徑 或 路徑物件 攔截到對應的地址
 // ie.'login'    {name: 'login'}
 // router.beforeEach((to) => {
-//     //如果沒有token, 且訪問的是非登入頁,攔截到登入, 其他情況正常放行
-//     const userStore = useUserStore()
-//     if(!userStore.token && to.path !== '/login'){
-//         return '/login'
-//     }
-
-// // })
+//   // 如果沒有token, 且訪問的是非登入頁,攔截到登入, 其他情況正常放行
+//   const userStore = useUserStore()
+//   if (!userStore.token && to.path !== '/login') {
+//     return '/login'
+//   }
+// })
 
 export default router

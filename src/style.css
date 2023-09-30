@@ -45,8 +45,25 @@ button {
 
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  background: none;
+}
 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ff2828;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #00ec6a;
+}
 
 #app {
   margin: 0 auto;

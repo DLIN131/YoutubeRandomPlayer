@@ -1,7 +1,7 @@
 <template>
   <!-- side menu -->
   <el-container class="layout-container-demo" style="height: 100vh">
-    <el-aside v-if="!notDisplaySideMenu" width="200px">
+    <el-aside v-if="!notDisplaySideMenu" width="200px" class=" z-10">
       <el-scrollbar>
         <button v-if="!notDisplaySideMenu" @click="toggleMenu"
           class=" w-11 h-11  flex items-center justify-center mb-3 bg-black">
@@ -46,10 +46,10 @@
     </el-aside>
     <!-- input area -->
     <el-container>
-      <el-header style="text-align: center; font-size: 16px" class=" shadow-lg shadow-black z-10">
-        <div class="w-full h-full p-1  flex justify-center gap-3 items-center relative">
+      <el-header style="text-align: center; font-size: 16px" class=" shadow-lg shadow-black">
+        <div class=" w-full h-full p-1 flex justify-center gap-3 items-center relative">
           <button v-if="notDisplaySideMenu" @click="toggleMenu"
-            class=" w-11 h-11 min-w-[2.75rem] rounded-md flex items-center justify-center z-10 bg-black ">
+            class=" w-11 h-11 min-w-[2.75rem] rounded-md flex items-center justify-center bg-black ">
             <el-icon>
               <Expand />
             </el-icon>
@@ -158,6 +158,7 @@ const handleUserCommand = async (command) => {
       creatAt: undefined,
       __v: undefined
     }
+    window.location.reload()
   } else if (command === 'upload') {
     const listname = useYoutubeData.currentListName
     const playlist = useYoutubeData.snippetData

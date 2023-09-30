@@ -20,7 +20,7 @@ const props = defineProps({
   title: { type: String, default: '' }
 })
 
-const emit = defineEmits(['changeState'])
+const emit = defineEmits(['changeState', 'changeVolume'])
 
 onMounted(() => {
   initPlayer()
@@ -80,7 +80,6 @@ const addStateChange = () => {
     emit('changeState', event)
   })
 }
-
 const removeStateChange = () => {
   if (stateChangeListener && player) player.off(stateChangeListener)
 }

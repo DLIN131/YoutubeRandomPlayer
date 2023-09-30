@@ -4,7 +4,9 @@
       class=" flex justify-center items-center login-card min-w-[30rem] rounded-xl h-96 bg-gray-800 shadow-2xl shadow-black hover:shadow-sm transition-all duration-500">
       <button @click="handleGoogleAccessTokenLogin"
         class="bg-transparent w-48 mb-3 hover:bg-gray-300 hover:text-black transition-all duration-400 border-red-700">google登入</button>
+
     </div>
+
   </div>
 </template>
 
@@ -24,7 +26,7 @@ const handleGoogleAccessTokenLogin = async () => {
   })
   console.log(res)
   const token = res.access_token
-  userStore.oauthToken = token
+
   const success = await userStore.getUserInfo(token)
   if (success) {
     alert('登入成功')
@@ -38,6 +40,7 @@ const handleGoogleAccessTokenLogin = async () => {
   console.log(userStore.accessToken)
   console.log('====================================')
 }
+
 </script>
 
 <style scoped></style>
