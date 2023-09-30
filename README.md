@@ -1,7 +1,7 @@
-# Vue 3 + Vite
+#This is a youtubeRandomPlayer that using vue3 to create
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+1. First , you need to paste a youtube playlist id or url into the text Area on the top
+2. Click the appen button to fetch the playlist data
+3. Just cllick the random  button to random play your video 
+4. You can search your list video when you click the search button
+5. You can use keyboard to control the video status i.e. W = preve video, s = next song, a and arrow left =  go back to five seconds ago, d and arrow right = Fast forward to five seconds
