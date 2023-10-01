@@ -1,10 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import videoDisplayPage from '../views/videoDisplayPage.vue'
 import homePage from '../views/homePage.vue'
 
 const router = createRouter({
   // vite.config.js base
-  history: createWebHistory(import.meta.env.Base_URL),
+  history: createWebHashHistory(import.meta.env.Base_URL),
   routes: [
     {
       path: '/',
