@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useUserStore } from './user'
-import { updatePlaylistData, postPlaylistData, fetchPlaylistData, fetchPlaylistNames } from '../../api/dealPlaylist'
+import {
+  updatePlaylistData,
+  postPlaylistData,
+  fetchPlaylistData,
+  fetchPlaylistNames,
+  deletePlaylistData
+} from '../../api/dealPlaylist'
 
 export const usePlaylistStore = defineStore('playlist', () => {
   // variable
@@ -57,12 +63,29 @@ export const usePlaylistStore = defineStore('playlist', () => {
       console.log('fetch listnames from server failed')
     }
   }
+
+  const deletePlaylist = async (name) => {
+    const params = {
+      userId: userStore.userInfo.userId,
+      listname: name
+    }
+    try {
+      const res = await deletePlaylistData(params)
+      if (res.data.success === true) {
+        listnames.value.splice(listnames.value.indexOf(name), 1)
+        alert('删除成功')
+      }
+    } catch (error) {
+      alert('刪除失敗')
+    }
+  }
   return {
     playlist,
     listnames,
     postPlaylist,
     updatePlaylist,
     fetchPlaylist,
-    fetchNames
+    fetchNames,
+    deletePlaylist
   }
 })

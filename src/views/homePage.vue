@@ -38,6 +38,8 @@
             </template>
             <el-menu-item class="list-item" v-for="(item, index) in playlistStore.listnames" :key="index"
               @click="handlefetchPlaylist(item)">
+              <span @click.stop="handleDeleteList(item)"
+                class="absolute left-2 flex items-center justify-center w-5 h-5 rounded-full p-2  bg-slate-600 ">X</span>
               {{ item }}
             </el-menu-item>
           </el-sub-menu>
@@ -188,6 +190,11 @@ const toggleMenu = () => {
   notDisplaySideMenu.value = !notDisplaySideMenu.value
 }
 
+const handleDeleteList = async (listname) => {
+  alert('確定要刪除?')
+  playlistStore.deletePlaylist(listname)
+}
+
 onMounted(async () => {
   await userStore.authLogin()
   if (userStore.accessToken) {
@@ -231,12 +238,14 @@ onMounted(async () => {
 .list-item {
   color: aqua;
   background-color: black;
-
+  display: flex;
+  position: relative;
 }
 
 .list-item:hover {
   background-color: aliceblue;
   color: black;
+
 }
 
 .el-dropdown-link {

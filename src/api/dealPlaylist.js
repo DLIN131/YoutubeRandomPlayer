@@ -23,3 +23,7 @@ export const fetchPlaylistData = (params) => {
 export const fetchPlaylistNames = (params) => {
   return instance.get('/playlist/listname', { params })
 }
+
+export const deletePlaylistData = (params) => {
+  return instance.delete('/playlist', { params })
+}
