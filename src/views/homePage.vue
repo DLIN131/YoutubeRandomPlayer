@@ -48,14 +48,22 @@
     </el-aside>
     <!-- input area -->
     <el-container>
-      <el-header style="text-align: center; font-size: 16px" class=" shadow-lg shadow-black">
-        <div class=" w-full h-full p-1 flex justify-center gap-3 items-center relative">
-          <button v-if="notDisplaySideMenu" @click="toggleMenu"
-            class=" w-11 h-11 min-w-[2.75rem] rounded-md flex items-center justify-center bg-black ">
-            <el-icon>
-              <Expand />
-            </el-icon>
-          </button>
+      <el-header style="text-align: center; font-size: 16px"
+        class=" shadow-lg shadow-black flex justify-between md:justify-center items-center">
+        <button v-if="notDisplaySideMenu" @click="toggleMenu"
+          class=" w-11 h-11 min-w-[2.75rem] rounded-md flex items-center justify-center bg-black ">
+          <el-icon>
+            <Expand />
+          </el-icon>
+        </button>
+        <button @click="toggleHeaderContainer"
+          class="md:hidden  w-11 h-11 min-w-[2.75rem] rounded-md flex ml-auto items-center justify-center bg-transparent ">
+          <el-icon>
+            <MoreFilled />
+          </el-icon>
+        </button>
+        <div id="headerContainer"
+          class="rounded-md absolute top-12 left-0 md:top-0 h-fit bg-slate-300/50 md:bg-transparent hidden overflow-hidden transition-all w-full md:h-full p-1 md:flex justify-center gap-3 items-center md:relative">
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
               <el-icon class="el-icon--left">
@@ -71,34 +79,35 @@
             </template>
           </el-dropdown>
 
-          <input v-model="listId" type="text" placeholder="listId" class="w-8/12 h-full mr-1">
-          <span class="w-36 flex gap-2 items-center">
-            <button @click="fetchData" class=" bg-black">append</button>
+          <input v-model="listId" type="text" placeholder="listId"
+            class="w-full h-12 md:w-8/12 md:h-full md:mt-0 mt-3 mr-1 rounded-md">
+          <span class="w-36 inline-flex items-center justify-center ">
+            <button @click="fetchData" class="mt-3 md:mt-0 bg-black">append</button>
             <img v-if="isLoading" class="w-7 h-7" src="../assets/img/hutoa01-unscreen.gif" alt="">
           </span>
-          <div v-if="!userStore.accessToken" class="p-1 min-w-fit bg-red-400 rounded-md border-l-fuchsia-200 border">
-            <router-link to="/login">登入/註冊</router-link>
-          </div>
-          <div v-else class=" flex items-center justify-evenly w-24 min-w-[6rem]">
-            <img width="30" :src="userStore.userInfo.avatar" alt="user" class=" rounded-full">
-            <span class=" min-w-fit">{{ userStore.userInfo.name }}</span>
-            <el-dropdown trigger="click" @command="handleUserCommand">
-              <span class="pt-1 cursor-pointer text-black ">
-                <el-icon>
-                  <CaretBottom />
-                </el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="logout">登出</el-dropdown-item>
-                  <el-dropdown-item command="upload">上傳清單</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-            <el-icon v-if="isUploading" class="is-loading">
-              <Loading />
-            </el-icon>
-          </div>
+        </div>
+        <div v-if="!userStore.accessToken" class="p-1 min-w-fit bg-red-400 rounded-md border-l-fuchsia-200 border">
+          <router-link to="/login">登入/註冊</router-link>
+        </div>
+        <div v-else class=" flex items-center justify-evenly w-24 min-w-[6rem]">
+          <img width="30" :src="userStore.userInfo.avatar" alt="user" class=" rounded-full">
+          <span class=" min-w-fit">{{ userStore.userInfo.name }}</span>
+          <el-dropdown trigger="click" @command="handleUserCommand">
+            <span class="pt-1 cursor-pointer text-black ">
+              <el-icon>
+                <CaretBottom />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="logout">登出</el-dropdown-item>
+                <el-dropdown-item command="upload">上傳清單</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-icon v-if="isUploading" class="is-loading">
+            <Loading />
+          </el-icon>
         </div>
       </el-header>
       <!-- songList -->
@@ -112,7 +121,7 @@
 <script lang="ts" setup>
 // import
 import { ref, onMounted } from 'vue'
-import { House, Download, Expand, Fold, List, CaretBottom, Loading } from '@element-plus/icons-vue'
+import { House, Download, Expand, Fold, List, CaretBottom, Loading, MoreFilled } from '@element-plus/icons-vue'
 import { useYoutubeDataStore, useUserStore, usePlaylistStore } from '../stores'
 
 // variables
@@ -190,6 +199,11 @@ const toggleMenu = () => {
   notDisplaySideMenu.value = !notDisplaySideMenu.value
 }
 
+const toggleHeaderContainer = () => {
+  const headerContainer = document.getElementById('headerContainer')
+  headerContainer?.classList.toggle('hidden')
+}
+
 const handleDeleteList = async (listname) => {
   alert('確定要刪除?')
   playlistStore.deletePlaylist(listname)
@@ -207,6 +221,7 @@ onMounted(async () => {
 <style scoped>
 .el-main {
   background: url('../assets/img/main_bg01.jpg') no-repeat center;
+  overflow-x: hidden;
 }
 
 .layout-container-demo .el-header {

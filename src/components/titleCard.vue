@@ -1,12 +1,12 @@
 <template>
-    <div>
-        <div class="loader">
-            <div class="song">
-                <p class="name ">{{title}}</p>
-                <p class="artist"></p>
-            </div>
-        </div>
+  <div>
+    <div class="loader">
+      <div class="song">
+        <p class="name ">{{ title }}</p>
+        <p class="artist"></p>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -26,13 +26,13 @@ defineProps({
   justify-content: center;
   border-radius: 10px;
   transition: .4s ease-in-out;
-  background: linear-gradient(to bottom , rgba(255, 172, 172,.5) 10%, rgba(0, 0, 0,.5) );
+  background: linear-gradient(to bottom, rgba(255, 172, 172, .5) 10%, rgba(0, 0, 0, .5));
   margin-top: 1rem;
-  max-width: 35rem ;
-  min-width: 35rem;
+  max-width: 35rem;
+  min-width: 20rem;
 }
 
-.name{
+.name {
   color: white;
 }
 
@@ -48,6 +48,7 @@ defineProps({
 .artist {
   font-size: 0.6em;
 }
+
 /*
 @keyframes move6 {
   0% {

@@ -1,14 +1,14 @@
 <template>
-  <div class="flex justify-between ">
-    <div class="flex flex-col w-8/12 items-center">
+  <div class=" md:flex md:justify-between ">
+    <div class=" flex flex-col md:w-8/12 items-center">
       <div class="player" ref="playerContainerRef">
-        <youtubePlayer v-if="isPrepare" :width="600" :height="400" :vid="videoId" :title="title" :id="id" ref="playerRef"
-          @changeState="getPlayerState">
+        <youtubePlayer v-if="isPrepare" :width="playerSize.width" :height="playerSize.height" :vid="videoId"
+          :title="title" :id="id" ref="playerRef" @changeState="getPlayerState">
         </youtubePlayer>
         <div v-else class="text-white">waiting fo video...</div>
       </div>
       <div v-if="isPrepare" id="buttonArea" class=" bg-transparent/[.7]
-                shadow-inner  shadow-gray-600 w-8/12 min-w-fit mt-10 flex flex-col
+                shadow-inner  shadow-gray-600 w-full md:w-8/12 min-w-fit mt-10 flex flex-col
                 justify-center items-center rounded-xl p-5">
         <div class="text-white">
           音量
@@ -33,7 +33,7 @@
             </el-icon></button>
         </div>
         <div class="flex items-center mt-2 gap-2 flex-wrap">
-          <button @click="setRandomPlay" :disabled="!useYoutubeData.isLoaded">Random</button>
+          <button @click="setRandomPlay" :disabled="!useYoutubeData.isLoaded">R</button>
           <button @click="setOrderPlay">
             <el-icon>
               <Sort class="rotate-90" />
@@ -48,22 +48,31 @@
     <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData" />
     <!-- 顯示影片清單區域 -->
 
-    <el-scrollbar ref="scrollRef" class="customScrollbar ml-3 flex flex-col" max-height="100vh" always native="true">
-      <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
-      <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
-        :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center relative
+    <div id="playlistScrollContainer"
+      class="translate-x-[110%] transition-transform md:translate-x-0 md:static absolute  right-1 top-0  w-fit overflow-x-hidden">
+      <el-scrollbar ref="scrollRef" class=" relative  md:flex flex-col" max-height="100vh" always native="true">
+        <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
+        <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
+          :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center relative
                      bg-black  w-full min-w-[7rem] cursor-pointer border border-white bg-transparent/[.5] shadow-inner shadow-md shadow-white
                        text-white`, { colorBackground: clickIndex === index }]">
-        <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
-        {{ item.snippet.position + " " + item.snippet.title }}
-        <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
-          { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
-          <el-icon>
-            <Download />
-          </el-icon>
-        </span>
-      </div>
-    </el-scrollbar>
+          <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
+          {{ item.snippet.position + " " + item.snippet.title }}
+          <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
+            { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
+            <el-icon>
+              <Download />
+            </el-icon>
+          </span>
+        </div>
+      </el-scrollbar>
+    </div>
+    <div @click="togglePlaylist"
+      class="md:hidden flex items-center absolute w-4 h-10 bg-slate-200/[.3] rounded-s-md border-2 text-black right-0 top-28 z-20 cursor-pointer">
+      <el-icon id="toggleListBtn" class="transition-transform">
+        <ArrowLeftBold />
+      </el-icon>
+    </div>
   </div>
 </template>
 
@@ -89,10 +98,13 @@ const useYoutubeData = useYoutubeDataStore()
 const usePlaylist = usePlaylistStore()
 const snippetData = ref([])
 const volumeRange = ref(0)
-
 const title = ref('')
 const videoId = ref('')
 const id = ref(0)
+const playerSize = ref({
+  width: window.innerWidth > 600 ? 600 : window.innerWidth - 10,
+  height: window.innerWidth > 600 ? 400 : window.innerHeight / 2
+})
 const isPrepare = ref(false)
 const isPlaying = ref(false)
 const playerRef = ref(null)
@@ -173,7 +185,7 @@ const changeToPrev = () => {
 
 // 獲取從youtubeplayer組件中emit過來的狀態
 const getPlayerState = (state) => {
-  console.log(state)
+  // console.log(state)
   volumeRange.value = state.target.getVolume()
   clearTimeout(timeOut)
   if (state.data === 0) {
@@ -251,6 +263,13 @@ const download = async (item, index) => {
 // const handleDelete = async (item) => {
 //   await useYoutubeData.deleteItem(item.id)
 // }
+
+const togglePlaylist = () => {
+  const toggleBtn = document.getElementById('toggleListBtn')
+  const scrollEle = document.getElementById('playlistScrollContainer')
+  scrollEle.classList.toggle('translate-x-[110%]')
+  toggleBtn.classList.toggle('rotate-180')
+}
 
 const handleGlobalKeyDown = (e) => {
   // 避免方向鍵觸發滾動條
@@ -331,34 +350,18 @@ button {
 
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1b8b8;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #9af5cf;
-  border-radius: 5px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #00ec6a;
-}
-
-.player {
-  perspective: 1000px;
-  transition: transform 0.3s ease;
-  /* transform: rotateY(45deg); */
-}
+.player {}
 
 .downloadBg {
   background-color: green;
+}
+
+@media screen and (max-width: 768px) {
+  button {
+    width: 5rem;
+    height: 1.75rem;
+    font-size: 100%;
+  }
 }
 
 button:hover {
