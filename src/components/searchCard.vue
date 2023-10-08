@@ -1,6 +1,6 @@
 <template >
   <div @click="handleClose" v-if="!isClose"
-    class="w-full h-full fixed left-0 top-0 flex items-center justify-center z-20">
+    class=" w-screen  h-screen md:inset-0  fixed left-0 top-0 flex items-center justify-center z-20">
     <div @click.stop=""
       class="search-container p-6 flex justify-center flex-col gap-2 w-[90%] h-[80%] min-w-[20rem]  bg-gray-800 rounded-xl z-20">
       <div class="w-full h-8 flex gap-3 justify-between">
