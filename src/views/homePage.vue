@@ -63,7 +63,7 @@
           </el-icon>
         </button>
         <div id="headerContainer"
-          class="rounded-md absolute top-12 left-0 md:top-0 h-fit bg-slate-300/50 md:bg-transparent hidden overflow-hidden transition-all w-full md:h-full p-1 md:flex justify-center gap-3 items-center md:relative">
+          class="rounded-md absolute top-12 left-0 md:top-0 h-fit bg-slate-300/50 md:bg-transparent hidden overflow-hidden transition-all w-full md:h-full p-1 md:flex justify-center gap-3 items-center md:relative z-30">
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
               <el-icon class="el-icon--left">
