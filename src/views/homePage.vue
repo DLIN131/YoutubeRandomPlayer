@@ -111,7 +111,7 @@
         </div>
       </el-header>
       <!-- songList -->
-      <el-main class="flex justify-centeritems-center min-w-96 h-[100vh]">
+      <el-main class="flex justify-centeritems-center  max-w-[100vw] h-[100vh] ">
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -149,6 +149,7 @@ const fetchData = async () => {
   isLoading.value = true
   await useYoutubeData.getSnippetData(listId.value)
   await useYoutubeData.getListName(listId.value)
+
   useYoutubeData.latestIndex = 0
   // console.log(useYoutubeData.snippetData);
 
@@ -221,7 +222,8 @@ onMounted(async () => {
 <style scoped>
 .el-main {
   background: url('../assets/img/main_bg01.jpg') no-repeat center;
-  overflow-x: hidden;
+  overflow: hidden;
+  padding: 0;
 }
 
 .layout-container-demo .el-header {

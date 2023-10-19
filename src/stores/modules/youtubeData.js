@@ -53,6 +53,7 @@ export const useYoutubeDataStore = defineStore('data', () => {
         params.value.pageToken = res.data.nextPageToken
       } catch (err) {
         console.log(err)
+        alert('抓取清單發生錯誤')
         return
       }
     } while (params.value.pageToken !== undefined)

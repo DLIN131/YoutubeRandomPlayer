@@ -22,7 +22,9 @@
 body {
   margin: 0;
   display: flex;
-  overflow-x: hidden !important;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden !important;
 }
 
 h1 {

@@ -1,5 +1,5 @@
 <template>
-  <div class=" md:flex md:justify-between ">
+  <div class=" md:flex md:justify-between relative p-2 ">
     <div class=" flex flex-col md:w-8/12 items-center">
       <div class="player" ref="playerContainerRef">
         <youtubePlayer v-if="isPrepare" :width="playerSize.width" :height="playerSize.height" :vid="videoId"
@@ -49,8 +49,8 @@
     <!-- 顯示影片清單區域 -->
 
     <div id="playlistScrollContainer"
-      class="translate-x-[110%] transition-transform md:translate-x-0 md:static absolute  right-1 top-0  w-fit overflow-x-hidden">
-      <el-scrollbar ref="scrollRef" class=" relative  md:flex flex-col" max-height="100vh" always native="true">
+      class="translate-x-[110%] transition-all md:translate-x-0 md:static absolute  right-1 top-0  w-fit overflow-x-hidden">
+      <el-scrollbar ref="scrollRef" class=" relative  md:flex flex-col" max-height="100vh" always native>
         <div v-if="!useYoutubeData.isLoaded" class=" text-white">[{{ useYoutubeData.snippetData.length }}]</div>
         <div v-for="(item, index) in snippetData" :key="index" @click="loadVideo(item, index)" :ref="listItems(index)"
           :class="[`flex place-items-start gap-3 h-32 overflow-ellipsis overflow-hidden  p-2 items-center relative
