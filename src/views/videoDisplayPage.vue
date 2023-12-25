@@ -315,7 +315,7 @@ const listItems = (index) => (el) => {
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalKeyDown)
   snippetData.value = [...useYoutubeData.snippetData]
-  // loadVideo(snippetData.value[useYoutubeData.latestIndex],useYoutubeData.latestIndex)
+  loadVideo(snippetData.value[useYoutubeData.latestIndex], useYoutubeData.latestIndex)
 })
 
 onBeforeUnmount(() => {
