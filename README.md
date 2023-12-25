@@ -4,4 +4,4 @@
 2. Click the appen button to fetch the playlist data
 3. Just cllick the random  button to random play your video 
 4. You can search your list video when you click the search button
-5. You can use keyboard to control the video status i.e. W = preve video, s = next song, a and arrow left =  go back to five seconds ago, d and arrow right = Fast forward to five seconds
+5. You can use keyboard to control the video status i.e. W = preve video, S = next video, a and arrow left =  go back to five seconds ago, d and arrow right = Fast forward to five seconds
