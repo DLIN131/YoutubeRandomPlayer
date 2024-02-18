@@ -150,7 +150,8 @@ const modifyListItemPos = (index) => {
     scrollRef.value.setScrollTop(0)
     return
   }
-  if (listItemsRef.value) {
+  if (listItemsRef.value && listItemsRef.value[index]) {
+    console.log(listItemsRef.value[index])
     const top = listItemsRef.value[index].getBoundingClientRect().height * (index - 4)
     scrollRef.value.setScrollTop(top)
     listItemsRef.value[index].getBoundingClientRect()
@@ -185,7 +186,8 @@ const changeToPrev = () => {
 
 // 獲取從youtubeplayer組件中emit過來的狀態
 const getPlayerState = (state) => {
-  // console.log(state)
+  console.log(state)
+  console.log(playerRef.value)
   volumeRange.value = state.target.getVolume()
   clearTimeout(timeOut)
   if (state.data === 0) {
@@ -199,7 +201,7 @@ const getPlayerState = (state) => {
       if (state.data === -1) {
         changeToNext()
       }
-    }, 1000)
+    }, 2000)
   }
 }
 

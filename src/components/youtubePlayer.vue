@@ -14,7 +14,7 @@ import titleCard from './titleCard.vue'
 
 const props = defineProps({
   id: { type: Number, default: 0 },
-  vid: { type: String, required: true },
+  vid: { type: String, required: true, default: '' },
   width: { type: Number, default: 0 },
   height: { type: Number, default: 0 },
   title: { type: String, default: '' }
