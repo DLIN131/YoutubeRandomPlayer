@@ -350,7 +350,9 @@ button {
 
 }
 
-.player {}
+.player {
+  /* display: none; */
+}
 
 .downloadBg {
   background-color: green;

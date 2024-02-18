@@ -221,7 +221,8 @@ onMounted(async () => {
 
 <style scoped>
 .el-main {
-  background: url('../assets/img/main_bg01.jpg') no-repeat center;
+  /* background: url('../assets/img/main_bg01.jpg') no-repeat center; */
+  background: black;
   overflow: hidden;
   padding: 0;
 }
