@@ -45,7 +45,8 @@
         </div>
       </div>
     </div>
-    <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo" :dataArr="snippetData" />
+    <searchCard v-if="isSearching" @handleClose="showSearching(message)" @loadVideo="loadVideo"
+      :dataArr="snippetData" />
     <!-- 顯示影片清單區域 -->
 
     <div id="playlistScrollContainer"
@@ -58,8 +59,13 @@
                        text-white`, { colorBackground: clickIndex === index }]">
           <img :src="item.snippet.thumbnails.medium.url" class=" w-28 h-24 rounded-md shadow-2">
           {{ item.snippet.position + " " + item.snippet.title }}
+          <span
+            :class="[`flex justify-center items-center absolute w-7 h-7 right-12 bottom-5 rounded-full bg-red-100/[.5] hover:bg-blue-400/[.5] `]"
+            @click.stop="deleteVideo(item.id)">
+            X
+          </span>
           <span :class="[`flex justify-center items-center absolute w-7 h-7 right-3 bottom-5 rounded-full bg-red-400/[.5] hover:bg-black/[.5]  `,
-            { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
+          { downloadBg: isDownloading[index] }]" @click.stop="download(item, index)">
             <el-icon>
               <Download />
             </el-icon>
@@ -79,10 +85,11 @@
 <script setup>
 // import
 import { useYoutubeDataStore, usePlaylistStore } from '../stores'
-import { ref, onBeforeUnmount, onMounted, watch } from 'vue'
+import { ref, onBeforeUnmount, onMounted, watch, onUnmounted } from 'vue'
 import youtubePlayer from '../components/youtubePlayer.vue'
 import searchCard from '../components/searchCard.vue'
 import { downloadData } from '../api/downloadData'
+import { API_KEY } from '../utils/apiKey'
 import {
   ArrowLeftBold,
   ArrowRightBold,
@@ -121,6 +128,7 @@ const next = ref({
 })
 const listItemsRef = ref([])
 const isSearching = ref(false)
+const accessToken = ref('') // youtube清單影片刪除用access token
 
 // methods
 // 載入歌曲
@@ -136,6 +144,7 @@ const loadVideo = async (item, index) => {
     next.value.prevItem = snippetData.value[index - 1]
     next.value.nextIndex = index + 1
     next.value.nextItem = snippetData.value[index + 1]
+    console.log(item)
   }
 }
 // 改變正在播放歌曲的背景
@@ -262,6 +271,61 @@ const download = async (item, index) => {
   }
 }
 
+// 授權登入
+const authenticate = () => {
+  window.tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: '959560237311-13dbj26mjffjcph7r49pq3c57lbvpgrr.apps.googleusercontent.com',
+    scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
+    callback: (response) => {
+      accessToken.value = response.access_token
+      loadClient()
+    },
+    prompt: 'consent',
+    ux_mode: 'popup'
+  })
+  window.tokenClient.requestAccessToken()
+}
+
+const loadClient = () => {
+  gapi.client.setApiKey(API_KEY)
+  gapi.client.setToken({ access_token: accessToken.value })
+  return gapi.client.load('https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest')
+    .then(
+      () => {
+        console.log('GAPI client loaded for API')
+      },
+      (err) => {
+        console.error('Error loading GAPI client for API', err)
+      }
+    )
+}
+
+const execute = (listItemId) => {
+  return gapi.client.youtube.playlistItems.delete({
+    id: listItemId
+  }).then(
+    (response) => {
+      console.log('Response', response)
+    },
+    (err) => {
+      console.error('Execute error', err)
+    }
+  )
+}
+
+// 刪除清單影片
+const deleteVideo = (id) => {
+  console.log(id)
+  if (!accessToken.value) {
+    authenticate()
+  }
+  execute(id)
+  // 刪除陣列中對應位置的資料
+  const index = useYoutubeData.snippetData.findIndex((item) => item.id === id)
+  console.log(snippetData.value[index])
+  useYoutubeData.snippetData.splice(index, 1)
+  snippetData.value.splice(index, 1)
+}
 // const handleDelete = async (item) => {
 //   await useYoutubeData.deleteItem(item.id)
 // }
@@ -314,10 +378,38 @@ const listItems = (index) => (el) => {
   listItemsRef.value[index] = el
 }
 
+const loadScripts = () => {
+  // 導入gapi
+  const script1 = document.createElement('script')
+  script1.src = 'https://accounts.google.com/gsi/client'
+  script1.async = true
+  script1.defer = true
+  document.body.appendChild(script1)
+
+  const script2 = document.createElement('script')
+  script2.src = 'https://apis.google.com/js/api.js'
+  script2.onload = () => {
+    gapi.load('client', () => {
+      console.log('GAPI client loaded')
+    })
+  }
+  document.body.appendChild(script2)
+
+  return () => {
+    document.body.removeChild(script1)
+    document.body.removeChild(script2)
+  }
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalKeyDown)
   snippetData.value = [...useYoutubeData.snippetData]
   loadVideo(snippetData.value[useYoutubeData.latestIndex], useYoutubeData.latestIndex)
+
+  const cleanup = loadScripts()
+  onUnmounted(() => {
+    cleanup()
+  })
 })
 
 onBeforeUnmount(() => {

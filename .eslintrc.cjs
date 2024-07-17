@@ -36,5 +36,9 @@ module.exports = {
     ],
     'vue/no-setup-props-destructure': ['off'],
     'no-undef': 'error'
+  },
+  globals: {
+    google: 'readonly', // 设置 google 为只读，表示这个全局变量不会被重新赋值
+    gapi: 'readonly' // 设置 gapi 为只读
   }
 }
