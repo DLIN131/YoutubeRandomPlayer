@@ -300,32 +300,36 @@ const loadClient = () => {
     )
 }
 
-const execute = (listItemId) => {
-  return gapi.client.youtube.playlistItems.delete({
-    id: listItemId
-  }).then(
-    (response) => {
-      console.log('Response', response)
-    },
-    (err) => {
-      console.error('Execute error', err)
-    }
-  )
+const execute = async (listItemId) => {
+  try {
+    const response = await gapi.client.youtube.playlistItems.delete({
+      id: listItemId
+    })
+    console.log('Response', response)
+    return true
+  } catch (err) {
+    console.error('Execute error', err)
+    return err
+  }
 }
 
 // 刪除清單影片
-const deleteVideo = (id) => {
+const deleteVideo = async (id) => {
   console.log(id)
   if (!accessToken.value) {
     authenticate()
   }
-  execute(id)
-  // 刪除陣列中對應位置的資料
-  const index = useYoutubeData.snippetData.findIndex((item) => item.id === id)
-  console.log(useYoutubeData.snippetData[index])
-  useYoutubeData.snippetData.splice(index, 1)
-  const index2 = snippetData.value.findIndex((item) => item.id === id)
-  snippetData.value.splice(index2, 1)
+  const result = await execute(id)
+  if (result === true) {
+    // 刪除陣列中對應位置的資料
+    const index = useYoutubeData.snippetData.findIndex((item) => item.id === id)
+    console.log(useYoutubeData.snippetData[index])
+    useYoutubeData.snippetData.splice(index, 1)
+    const index2 = snippetData.value.findIndex((item) => item.id === id)
+    snippetData.value.splice(index2, 1)
+  } else {
+    authenticate()
+  }
 }
 
 const togglePlaylist = () => {
