@@ -322,13 +322,11 @@ const deleteVideo = (id) => {
   execute(id)
   // 刪除陣列中對應位置的資料
   const index = useYoutubeData.snippetData.findIndex((item) => item.id === id)
-  console.log(snippetData.value[index])
+  console.log(useYoutubeData.snippetData[index])
   useYoutubeData.snippetData.splice(index, 1)
-  snippetData.value.splice(index, 1)
+  const index2 = snippetData.value.findIndex((item) => item.id === id)
+  snippetData.value.splice(index2, 1)
 }
-// const handleDelete = async (item) => {
-//   await useYoutubeData.deleteItem(item.id)
-// }
 
 const togglePlaylist = () => {
   const toggleBtn = document.getElementById('toggleListBtn')
